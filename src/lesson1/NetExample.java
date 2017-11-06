@@ -36,7 +36,7 @@ public class NetExample {
         while (scanner.hasNext()){
             String line = scanner.nextLine();
             System.out.println(line);
-            writer.println("Ok");
+            writer.println(" > " + line);
             writer.flush();
             if(line.equals("bye")){
                 writer.println("Good bye");

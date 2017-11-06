@@ -1,4 +1,4 @@
-package lesson2;
+package lesson3;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -6,32 +6,9 @@ import java.net.Socket;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
-public class ChatClient {
+public class Communicator {
 
     private PrintWriter writer;
-
-    public static void main(String[] args) {
-        Scanner keyboardScanner = new Scanner(System.in);
-        ChatClient chat = new ChatClient();
-
-        new Thread(() -> {
-            while (keyboardScanner.hasNextLine()){
-                String line = keyboardScanner.nextLine();
-                chat.sendTextServer(line);
-            }
-        }).start();
-
-//        chat.init(new Consumer<String>() {
-//
-//            @Override
-//            public void accept(String line) {
-//                System.out.println(line);
-//            }
-//        });
-
-        chat.init(System.out::println);
-
-    }
 
     public void init(Consumer<String> consumer) {
         try {
@@ -50,6 +27,7 @@ public class ChatClient {
             e.printStackTrace();
         }
     }
+
 
     public void sendTextServer(String line) {
         System.out.println("sending to server "+line);
