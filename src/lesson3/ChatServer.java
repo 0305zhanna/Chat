@@ -30,10 +30,17 @@ public class ChatServer {
                 new Thread(()->{
                     long delay = sessions.isEmpty()? 2000: 100;
                     String name = "User" + userCount++;
-                    ChatSession chatSession = new ChatSession(name,delay);
+
+                    ChatSession chatSession = new ChatSession(socket,name,delay);
+
+                    sendBroadcastUserName(chatSession);
+
                     sessions.add(chatSession);
+                    sendNameList2Client(chatSession);
+
                     System.out.println("Sessions size: "+sessions.size());
-                    chatSession.processConnection(socket,ChatServer::broadcast,
+
+                    chatSession.processConnection(ChatServer::broadcast,
                             ChatServer::removeSessino);
                 }).start();
             }
@@ -41,6 +48,21 @@ public class ChatServer {
             e.printStackTrace();
         }
 
+    }
+
+    private static void sendBroadcastUserName(ChatSession chatSession) {
+
+        String command = "/add " + chatSession.getName();
+        broadcast(command);
+
+    }
+
+    private static void sendNameList2Client(ChatSession chatSession) {
+        String namelist = "/list";
+        for (ChatSession s: sessions) {
+            namelist+= " " + s.getName();
+        }
+        chatSession.send2Client(namelist);
     }
 
     private static void broadcast(String s) {
@@ -53,6 +75,7 @@ public class ChatServer {
 
     private static void removeSessino(ChatSession session){
         sessions.remove(session);
+        broadcast("/remove " + session.getName());
         System.out.println("removed "+session);
         System.out.println("Sessions size: "+sessions.size());
     }

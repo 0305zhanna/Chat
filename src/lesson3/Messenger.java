@@ -33,20 +33,19 @@ public class Messenger {
 
         JTextField textField = new JTextField(20);
         inputPanel.add(textField);
-        textField.addActionListener((e)->{
-            sendText(textField);
-        });
+        textField.addActionListener(e -> sendText(textField));
 
         JButton sendButton = new JButton("Отправить");
         inputPanel.add(sendButton);
 
-        sendButton.addActionListener((e)->{
-            sendText(textField);
-        });
+        sendButton.addActionListener(e->sendText(textField));
 
         panel.add(inputPanel,BorderLayout.SOUTH);
 
         userList = new List(10,false);
+        userList.addActionListener(e -> {
+            textField.setText(e.getActionCommand()+" ");
+        });
 
         panel.add(userList,BorderLayout.WEST);
 
@@ -58,7 +57,7 @@ public class Messenger {
 
         chat = new Communicator();
 
-        chat.init(Messenger::placeText);
+        chat.init(Messenger::processServerMessage);
 
     }
 
@@ -68,13 +67,35 @@ public class Messenger {
         chat.sendTextServer(text);
     }
 
-    private static void placeText(String text) {
+    private static void processServerMessage(String text) {
         if(text.startsWith("/name")){
             String[] words = text.split(" ");//разделяем строку на слова через пробелы
-            userList.add(words[1]);
-        }else {
+            textArea.append("Добро пожаловать в чат, "+words[1]+"\n");
+            //userList.add(words[1]);
+            return;
+        }
+        if(text.startsWith("/list")){
+            String[] names = text.split(" ");//разделяем строку на слова через пробелы
+            for (int i = 1; i<names.length;i++){
+                userList.add(names[i]);
+            }
+            return;
+        }
+        if(text.startsWith("/add")){
+            String[] names = text.split(" ");//разделяем строку на слова через пробелы
+            userList.add(names[1]);
+            return;
+        }
+        if(text.startsWith("/remove")){
+            String[] names = text.split(" ");//разделяем строку на слова через пробелы
+            userList.remove(names[1]);
+            return;
+        }
+
+        //        else {
         textArea.append(text+'\n');
-        textArea.setCaretPosition(textArea.getDocument().getLength());}
+//        textArea.setCaretPosition(textArea.getDocument().getLength());
+//        }
     }
 
 }
