@@ -1,4 +1,4 @@
-package lesson3;
+package ChatEncrypt;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -34,10 +34,6 @@ public class ChatServer {
 
                         ChatSession chatSession = new ChatSession(socket, name, delay);
 
-                        if(sessions.size() == 1){
-                            sendBroadcastNoPublicKey(chatSession);//посылаем первому клиенту запрос
-                        }
-
                         sendBroadcastUserName(chatSession);
 
                         sessions.add(chatSession);
@@ -46,7 +42,7 @@ public class ChatServer {
                         System.out.println("Sessions size: " + sessions.size());
 
                         chatSession.processConnection(ChatServer::broadcast,
-                                ChatServer::removeSession,ChatServer::sendBroadcastPublicKey);
+                                ChatServer::removeSession);
                     }).start();
                 }
             }
@@ -60,21 +56,6 @@ public class ChatServer {
 
         String command = "/add " + chatSession.getName();
         broadcast(command);
-
-    }
-
-    private static void sendBroadcastNoPublicKey(ChatSession chatSession) {
-
-        System.out.println("Sending to client /notkey...");
-        String command = "/notkey";
-        broadcast(command);
-
-    }
-    private static void sendBroadcastPublicKey(String s) {
-
-        System.out.println("broadcasting ..." + s);
-
-        broadcast(s);
 
     }
 

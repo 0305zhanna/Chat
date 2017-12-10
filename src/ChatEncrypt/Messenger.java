@@ -1,10 +1,7 @@
-package lesson3;
-
-import AES.EncryptedMessage;
+package ChatEncrypt;
 
 import javax.swing.*;
 import java.awt.*;
-import java.math.BigInteger;
 
 public class Messenger {
 
@@ -72,7 +69,11 @@ public class Messenger {
     private static void sendEncryptedText(JTextField textField) {
         String text = textField.getText();
         textField.setText("");
-        chat.sendEncryptedTextServer(text);
+        try {
+            chat.sendEncryptedTextServer(text);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     private static void processServerMessage(String text) {
         if(text.startsWith("/name")){
@@ -98,25 +99,14 @@ public class Messenger {
             userList.remove(names[1]);
             return;
         }
-        if(text.startsWith("/notkey")){
-            System.out.println("Resieved request /notkey "+chat.toString());
-            chat.sendPublicKey2Server();
-            text = "";
-            return;
-        }
-        if(text.startsWith("/publickey")){
-            System.out.println("Resieved  request /publickey "+chat.toString()+" "+text);
-            String[] s =text.split(" ");
-            System.out.println("Public key = "+ new BigInteger(s[1], 16).toByteArray());
-            chat.sendPublicKey2ServerWithParams(new BigInteger(s[1], 16).toByteArray());
-            text = "";
-            return;
-        }
-        if(text.startsWith("/dophase1")){
-            System.out.println("Doing phase "+chat.toString());
-            String[] s =text.split(" ");
-            chat.doPhase(new BigInteger(s[1], 16).toByteArray());
-            text = "";
+        if(text.startsWith("/encrypted")){
+            String[] s = text.split(" ");
+            text = s[1];
+            try {
+                text =s[2]+" > "+ chat.decrypt(text);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         textArea.append(text+'\n');
     }

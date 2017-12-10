@@ -1,4 +1,4 @@
-package lesson3;
+package ChatEncrypt;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -27,23 +27,17 @@ public class ChatSession {
         }
     }
     void processConnection(Consumer<String> broadcaster,
-                           Consumer<ChatSession> sessionRemover,Consumer<String> publicKeySender){
+                           Consumer<ChatSession> sessionRemover){
         try {
 
             send2Client("/name "+ name);
 
         while (scanner.hasNext()){
             String line = scanner.nextLine();
-
             System.out.println("Receives from client: " + line);
-            if(line.startsWith("/publickey")){
-                publicKeySender.accept(line);
-            }else if(line.startsWith("/dophase1")){
-                publicKeySender.accept(line);
-            }else if(line.startsWith("/encrypted")){
-                publicKeySender.accept(line);
-            }
-            else {
+            if(line.startsWith("/encrypted")){
+                broadcaster.accept(line+" "+name);
+            }else {
                 broadcaster.accept(name + " > " + line);
             }
         }
